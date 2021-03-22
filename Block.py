@@ -17,7 +17,7 @@ class Block:
         json_transactions = []
         for t in self.transactions:
             json_transactions.append(t.to_dict())
-        #list.sort(json_transactions)
+        json_transactions = sorted(json_transactions, key = lambda i: (i["from"], i["to"], i["amount"]))
         b = {
             "prevHash": self.prev_hash,
             "transactions": json_transactions,

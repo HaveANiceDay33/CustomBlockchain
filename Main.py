@@ -1,16 +1,23 @@
 import json
-import flask
+#import flask
 from hashlib import sha256
+from Transaction import Transaction
+from Block import Block
 
 #transaction
 #block
 #proof method
 #hashing
 #server communications
+
 def main():
-    while(1==1):
-        num = input("Enter a command: ")
-        if(num == "Q"):
-            exit(1)
+
+    trans = []
+    trans.append(Transaction("A", "B", 10))
+    trans.append(Transaction("B", "C", 20))
+
+    b = Block(0, trans, 33)
+
+    print(b.to_json())
 
 main()

@@ -5,6 +5,8 @@ from Transaction import Transaction
 from Block import Block
 from Blockchain import Blockchain
 
+### TEST CODE ONLY ###
+### RUN CLIENT/SERVER FOR ACTUAL USE ###
 
 # transaction
 # block

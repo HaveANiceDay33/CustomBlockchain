@@ -1,26 +1,26 @@
 import json
-#import flask
+# import flask
 from hashlib import sha256
 from Transaction import Transaction
 from Block import Block
 from Blockchain import Blockchain
 
-#transaction
-#block
-#proof method
-#hashing
-#server communications
+
+# transaction
+# block
+# proof method
+# hashing
+# server communications
 
 def main():
-
-    trans = []
-    trans.append(Transaction("A", "B", 10))
-    trans.append(Transaction("A", "C", 10))
-    trans.append(Transaction("D", "B", 10))
-    trans.append(Transaction("A", "B", 11))
-
-    b = Block(0, trans, 33)
-    c = Block(1, trans[0:1], 45)
+    # trans = []
+    # trans.append(Transaction("A", "B", 10))
+    # trans.append(Transaction("A", "C", 10))
+    # trans.append(Transaction("D", "B", 10))
+    # trans.append(Transaction("A", "B", 11))
+    #
+    # b = Block(0, trans, 33)
+    # c = Block(1, trans[0:1], 45)
 
     bc = Blockchain()
 
@@ -28,24 +28,28 @@ def main():
     bc.addtransaction("B", "C", 12)
     bc.addtransaction("A", "D", 43)
 
-
-    bc.addblock(b)
-    bc.addblock(c)
-
     mine(bc)
-    #bc.readchain()
+    print(bc.readchain())
 
-    #print(b.to_json())
 
 def mine(bc):
-    transactions = bc.viewpendingtransactions()
+    transactionsString = bc.viewpendingtransactions()
+    transactionsDict = json.loads(transactionsString)
+    transactions = []
+    for t in transactionsDict["Pending_transactions"]:
+        transaction = Transaction(t["from"], t["to"], t["amount"])
+        transactions.append(transaction)
+
     lastblock = json.loads(bc.readchain())["Blocks"][0]
     proof = 0
     hash = ""
-    while(hash[0:3] != "0000"):
+    while (hash[:3] != "000"):
+        proof += 1
         testBlock = Block(sha256(json.dumps(lastblock).encode()).hexdigest(), transactions, proof)
         hash = sha256(testBlock.to_json().encode()).hexdigest()
-        proof += 1
+        print(hash, proof)
 
-    bc.verifyblock(testBlock)
+    bc.verifyblock(proof)
+
+
 main()

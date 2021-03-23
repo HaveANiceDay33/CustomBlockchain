@@ -16,6 +16,7 @@ class Blockchain:
         self.blocks[block.prev_hash] = self.currBlock
         self.currBlock = block
 
+
     def readchain(self):
         readBlock = self.currBlock
         chainedblocks = []
@@ -42,11 +43,15 @@ class Blockchain:
         self.pendingTransactions.clear()
 
     def verifyblock(self, proof):
-        newBlock = Block(sha256(self.currBlock.to_json().encode()).hexdigest(), self.pendingTransactions, proof)
+        transactions = []
+        for t in self.pendingTransactions:
+            transactions.append(t)
+        newBlock = Block(sha256(self.currBlock.to_json().encode()).hexdigest(), transactions, proof)
         hash = sha256(newBlock.to_json().encode()).hexdigest()
         print(proof)
         print(hash)
-        if hash[:3] == "000":
+        if hash[:4] == "0000":
             self.addblock(newBlock)
+            self.removetransactions()
         else:
             print("INVALID BLOCK")

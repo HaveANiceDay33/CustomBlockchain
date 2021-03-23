@@ -29,6 +29,12 @@ def main():
     bc.addtransaction("A", "D", 43)
 
     mine(bc)
+
+    bc.addtransaction("A", "C", 2)
+    bc.addtransaction("A", "B", 675)
+
+    mine(bc)
+
     print(bc.readchain())
 
 
@@ -43,11 +49,11 @@ def mine(bc):
     lastblock = json.loads(bc.readchain())["Blocks"][0]
     proof = 0
     hash = ""
-    while (hash[:3] != "000"):
+    while (hash[:4] != "0000"):
         proof += 1
         testBlock = Block(sha256(json.dumps(lastblock).encode()).hexdigest(), transactions, proof)
         hash = sha256(testBlock.to_json().encode()).hexdigest()
-        print(hash, proof)
+        #print(hash, proof)
 
     bc.verifyblock(proof)
 

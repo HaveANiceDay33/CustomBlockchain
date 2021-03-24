@@ -26,14 +26,14 @@ class Blockchain:
             readBlock = self.blocks[readBlock.prev_hash]
         chainedblocks.append(self.firstBlock.to_dict())
         blocksDict = {"Blocks": chainedblocks}
-        return json.dumps(blocksDict,separators=(',', ':'))
+        return json.dumps(blocksDict,separators=(',', ':'), indent=2)
 
     def viewpendingtransactions(self):
         transactionslist = []
         for item in self.pendingTransactions:
             transactionslist.append(item.to_dict())
         transactions = {"Pending_transactions": transactionslist}
-        return json.dumps(transactions,separators=(',', ':'))
+        return json.dumps(transactions,separators=(',', ':'), indent=2)
 
     def addtransaction(self, fromS, to, amount):
         transaction_to_add = Transaction(fromS, to, amount)

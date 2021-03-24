@@ -9,10 +9,16 @@ apiUrl = "http://127.0.0.1:5000"
 def getpendingtransactions():
     return requests.get(apiUrl + "/transactions").json()
 
-
 def getchain():
     return requests.get(apiUrl + "/chain").json()
 
+def getpendingtransactionsPretty():
+    jsonStr = requests.get(apiUrl + "/transactions").json()
+    return json.dumps(jsonStr, indent=2)
+
+def getchainPretty():
+    jsonStr = requests.get(apiUrl + "/chain").json()
+    return json.dumps(jsonStr, indent=2)
 
 def postnewtransaction(fromS, to, amount):
     return requests.post(apiUrl + "/transactions/new", data={'from': fromS, 'to': to, 'amount': amount})
@@ -47,11 +53,11 @@ def main():
         if userInput == "e":
             exit(0)
         elif userInput == "c":
-            print(getchain())
+            print(getchainPretty())
         elif userInput == "m":
             mine()
         elif userInput == "t":
-            print(getpendingtransactions())
+            print(getpendingtransactionsPretty())
         elif userInput == "a":
             fromS = input("from? - ")
             to =input("to? - ")

@@ -26,14 +26,14 @@ class Blockchain:
             readBlock = self.blocks[readBlock.prev_hash]
         chainedblocks.append(self.firstBlock.to_dict())
         blocksDict = {"Blocks": chainedblocks}
-        return json.dumps(blocksDict)
+        return json.dumps(blocksDict,separators=(',', ':'))
 
     def viewpendingtransactions(self):
         transactionslist = []
         for item in self.pendingTransactions:
             transactionslist.append(item.to_dict())
         transactions = {"Pending_transactions": transactionslist}
-        return json.dumps(transactions)
+        return json.dumps(transactions,separators=(',', ':'))
 
     def addtransaction(self, fromS, to, amount):
         transaction_to_add = Transaction(fromS, to, amount)
@@ -46,12 +46,13 @@ class Blockchain:
         transactions = []
         for t in self.pendingTransactions:
             transactions.append(t)
+
         newBlock = Block(sha256(self.currBlock.to_json().encode()).hexdigest(), transactions, proof)
         hash = sha256(newBlock.to_json().encode()).hexdigest()
-        print(proof)
-        print(hash)
         if hash[:4] == "0000":
             self.addblock(newBlock)
             self.removetransactions()
+            return "VALID"
         else:
             print("INVALID BLOCK")
+            return "INVALID"

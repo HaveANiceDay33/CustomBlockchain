@@ -11,7 +11,7 @@ class Block:
         self.proof = proof
 
     def to_json(self):
-        return json.dumps(self.to_dict())
+        return json.dumps(self.to_dict(),separators=(',', ':'))
 
     def to_dict(self):
         json_transactions = []

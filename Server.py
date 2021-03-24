@@ -14,7 +14,7 @@ def printBlockChain():
 def verifyBlock():
     if request.method == 'POST':
         data = request.form
-        return bc.verifyblock(data.get("proof"))
+        return bc.verifyblock(int(data.get("proof")))
     else:
         return "Could not verify block"
 
@@ -22,11 +22,12 @@ def verifyBlock():
 def printTransaction():
     return bc.viewpendingtransactions()
 
-@app.route('/mine/prove', methods = ["POST"])
+@app.route('/transactions/new', methods = ["POST"])
 def addtransaction():
     if request.method == 'POST':
         data = request.form
-        return bc.addtransaction(data.get("from"), data.get("to"), data.get("amount"))
+        bc.addtransaction(data.get("from"), data.get("to"), data.get("amount"))
+        return "ADDED transaction"
     else:
         return "Cannot add transaction"
 

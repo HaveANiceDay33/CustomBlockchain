@@ -9,7 +9,7 @@ class Transaction:
         self.amount = amount
 
     def to_json(self):
-        return json.dumps(self.to_dict)
+        return json.dumps(self.to_dict(),separators=(',', ':'))
 
     def to_dict(self):
         t = {

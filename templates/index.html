@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>SamBKCoin (lol)</title>
+</head>
+<style>
+    .row {
+        display: flex;
+    }
+    .column {
+        flex: 50%;
+    }
+</style>
+
+<body>
+    <div class="row">
+        <div id="chainDiv" class="column">
+            <h1>Current Chain:</h1>
+            <div id="blocklist">
+
+            </div>
+        </div>
+        <div id="transactionDiv" class="column">
+            <h1>Pending Transactions:</h1>
+            <div id="transactionsList">
+
+            </div>
+        </div>
+    </div>
+    <script src="{{url_for('static', filename='main.js')}}"></script>
+
+</body>
+
+</html>

@@ -1,10 +1,18 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask import request
+from flask_cors import CORS, cross_origin
 from Blockchain import Blockchain
 
 app = Flask(__name__)
-
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 bc = Blockchain()
+
+
+@app.route('/')
+@cross_origin()
+def displayPage():
+    return render_template("index.html")
 
 @app.route('/chain', methods = ["GET"])
 def printBlockChain():

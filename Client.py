@@ -1,8 +1,10 @@
 import requests
 import json
+import rsa
 from Transaction import Transaction
 from Block import Block
 from hashlib import sha256
+
 
 apiUrl = "http://127.0.0.1:5000"
 
@@ -20,8 +22,8 @@ def getchainPretty():
     jsonStr = requests.get(apiUrl + "/chain").json()
     return json.dumps(jsonStr, indent=2)
 
-def postnewtransaction(fromS, to, amount):
-    return requests.post(apiUrl + "/transactions/new", data={'from': fromS, 'to': to, 'amount': amount})
+def postnewtransaction(fromS, to, amount, signature):
+    return requests.post(apiUrl + "/transactions/new", data={'from': fromS, 'to': to, 'amount': amount, 'signature': signature})
 
 
 def postnewproof(proof):
@@ -46,8 +48,27 @@ def mine():
     postnewproof(proof)
     print("Block sent with proof: ", proof)
 
+def addTransaction(publicKey, privateKey):
+    fromS = input("from? - ")
+    to =input("to? - ")
+    amount = input("amount? - ")
+
+    message = (fromS+to+amount).encode()
+    hashed = rsa.compute_hash(message, 'SHA-1')
+    signature = rsa.sign_hash(hashed, privateKey, 'SHA-1')
+    postnewtransaction(fromS, to, amount, signature)
+    print("Transaction added!")
 
 def main():
+    #TODO: Add loading of keys from disk
+    publicKey = None
+    privateKey = None
+    hasKeys = False
+    if(hasKeys == False):
+        print("No key pair found. Generating new key pair...")
+        (publicKey, privateKey) = rsa.newkeys(2048)
+        print("New key pair generated.")
+        #TODO: Save keys to disk
     while(1==1):
         userInput = str.lower(input("CLIENT >> "))
         if userInput == "e":
@@ -59,12 +80,7 @@ def main():
         elif userInput == "t":
             print(getpendingtransactionsPretty())
         elif userInput == "a":
-            fromS = input("from? - ")
-            to =input("to? - ")
-            amount = input("amount? - ")
-
-            postnewtransaction(fromS, to, amount)
-            print("Transaction added!")
+            addTransaction(publicKey, privateKey)
 
 
 main()

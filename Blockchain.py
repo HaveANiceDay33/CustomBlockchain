@@ -1,4 +1,8 @@
+import codecs
 import json
+import rsa
+from rsa import VerificationError
+
 from Block import Block
 from Transaction import Transaction
 from hashlib import sha256
@@ -11,6 +15,7 @@ class Blockchain:
         self.firstBlock = self.currBlock
         self.pendingTransactions = []
         self.blocks = {}
+        self.publicKeys = {}
 
     def addblock(self, block):
         self.blocks[block.prev_hash] = self.currBlock
@@ -35,9 +40,21 @@ class Blockchain:
         transactions = {"Pending_transactions": transactionslist}
         return json.dumps(transactions,separators=(',', ':'), indent=2)
 
-    def addtransaction(self, fromS, to, amount):
+    def addtransaction(self, fromS, to, amount, signature, publicKeyN, publicKeyE):
+        if fromS in self.publicKeys:
+            publicKey = self.publicKeys[fromS]
+        else:
+            publicKey = rsa.PublicKey(int(publicKeyN), int(publicKeyE))
+            self.publicKeys[fromS] = publicKey
+        message = (fromS + to + amount).encode('utf8')
+        try:
+            rsa.verify(message, bytes.fromhex(signature), publicKey)
+        except VerificationError:
+            print("False signature attempt")
+            return False
         transaction_to_add = Transaction(fromS, to, amount)
         self.pendingTransactions.append(transaction_to_add)
+        return True
 
     def removetransactions(self):
         self.pendingTransactions.clear()

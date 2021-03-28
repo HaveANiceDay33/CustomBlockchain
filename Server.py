@@ -34,8 +34,11 @@ def printTransaction():
 def addtransaction():
     if request.method == 'POST':
         data = request.form
-        bc.addtransaction(data.get("from"), data.get("to"), data.get("amount"))
-        return "ADDED transaction"
+        if(bc.addtransaction(data.get("from"), data.get("to"), data.get("amount"), data.get("signature"),
+                          data.get("publicKeyN"), data.get("publicKeyE"))):
+            return "ADDED transaction"
+        else:
+            return "Invalid signature"
     else:
         return "Cannot add transaction"
 

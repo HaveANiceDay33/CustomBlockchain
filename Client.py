@@ -22,9 +22,10 @@ def getchainPretty():
     jsonStr = requests.get(apiUrl + "/chain").json()
     return json.dumps(jsonStr, indent=2)
 
-def postnewtransaction(fromS, to, amount, signature):
-    return requests.post(apiUrl + "/transactions/new", data={'from': fromS, 'to': to, 'amount': amount, 'signature': signature})
-
+def postnewtransaction(fromS, to, amount, signature, publicKey):
+    return requests.post(apiUrl + "/transactions/new", data={'from': fromS, 'to': to, 'amount': amount,
+                                                             'signature': signature, 'publicKeyN': publicKey.n,
+                                                             'publicKeyE': publicKey.e})
 
 def postnewproof(proof):
     return requests.post(apiUrl + "/mine/prove", data={'proof': proof})
@@ -53,11 +54,18 @@ def addTransaction(publicKey, privateKey):
     to =input("to? - ")
     amount = input("amount? - ")
 
-    message = (fromS+to+amount).encode()
-    hashed = rsa.compute_hash(message, 'SHA-1')
-    signature = rsa.sign_hash(hashed, privateKey, 'SHA-1')
-    postnewtransaction(fromS, to, amount, signature)
-    print("Transaction added!")
+    message = (fromS+to+amount).encode('utf8')
+    hashed = rsa.compute_hash(message, 'SHA-256')
+    signature = rsa.sign_hash(hashed, privateKey, 'SHA-256').hex()
+    postnewtransaction(fromS, to, amount, signature.encode(), publicKey)
+    print("Transaction sent!")
+
+def generateKeys():
+    #TODO: Save keys to disk
+    print("No key pair found. Generating new key pair...")
+    keys = rsa.newkeys(512)
+    print("New key pair generated.")
+    return keys
 
 def main():
     #TODO: Add loading of keys from disk
@@ -65,10 +73,7 @@ def main():
     privateKey = None
     hasKeys = False
     if(hasKeys == False):
-        print("No key pair found. Generating new key pair...")
-        (publicKey, privateKey) = rsa.newkeys(2048)
-        print("New key pair generated.")
-        #TODO: Save keys to disk
+        (publicKey, privateKey) = generateKeys()
     while(1==1):
         userInput = str.lower(input("CLIENT >> "))
         if userInput == "e":
@@ -81,6 +86,8 @@ def main():
             print(getpendingtransactionsPretty())
         elif userInput == "a":
             addTransaction(publicKey, privateKey)
+        elif userInput == "k":
+            (publicKey, privateKey) = generateKeys()
 
 
 main()

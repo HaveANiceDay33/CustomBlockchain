@@ -13,7 +13,8 @@
         display: flex;
     }
     .column {
-        flex: 50%;
+        text-align: center;
+        flex: 30%;
     }
     #blocklist{
         display: grid;
@@ -23,13 +24,18 @@
         margin:10px;
     }
     .block {
+        text-align: center;
         border: 2px solid black;
         border-radius: 4px;
         margin: 0px 10px;
         padding: 3px;
+        opacity = 0.5;
     }
     .chainlink {
         text-align: center;
+    }
+    table {
+        margin: auto;
     }
     table, th, td {
         border: 1px solid black;
@@ -38,6 +44,10 @@
     th, td {
         padding: 5px;
         text-align: left;
+        overflow: hidden;
+        max-width: 40ch;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 </style>
 

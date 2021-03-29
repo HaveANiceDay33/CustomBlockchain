@@ -8,6 +8,15 @@ function htmlToElement(html) {
 	return template.content.firstChild;
 }
 
+function getRandomColor() {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
 async function getCurrentChain(url){ 
     response = await fetch(url + "/chain");
     var data = await response.json();
@@ -25,6 +34,7 @@ async function getCurrentChain(url){
             table.append(newTrans);
         }
         newBlock.append(table);
+        newBlock.style.backgroundColor = "rgb("+Math.floor(Math.random() * 255)+","+Math.floor(Math.random() * 255)+","+Math.floor(Math.random() * 255)+",0.4)";
         const newChainLink = createLink();
         newList.appendChild(newChainLink);
         newList.appendChild(newBlock);

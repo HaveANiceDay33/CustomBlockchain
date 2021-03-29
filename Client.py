@@ -22,22 +22,22 @@ def getchainPretty():
     jsonStr = requests.get(apiUrl + "/chain").json()
     return json.dumps(jsonStr, indent=2)
 
-def postnewtransaction(fromS, to, amount, signature, publicKey):
-    return requests.post(apiUrl + "/transactions/new", data={'from': fromS, 'to': to, 'amount': amount,
-                                                             'signature': signature, 'publicKeyN': publicKey.n,
-                                                             'publicKeyE': publicKey.e})
+def postnewtransaction(to, amount, signature, publicKey):
+    return requests.post(apiUrl + "/transactions/new", data={'to': to, 'amount': amount,
+                                                             'signature': signature, 'publicKeyN': hex(publicKey.n)})
 
-def postnewproof(proof, name):
-    return requests.post(apiUrl + "/mine/prove", data={'proof': proof, 'name': name})
+def postnewproof(proof, publicKey):
+    return requests.post(apiUrl + "/mine/prove", data={'proof': proof, 'publicKeyN': hex(publicKey.n)})
 
-def mine():
-    name = input("Mine for who? - ")
+def mine(publicKey):
     transactionsDict = getpendingtransactions()["Pending_transactions"]
     transactions = []
     for t in transactionsDict:
         transaction = Transaction(t["from"], t["to"], t["amount"])
         transactions.append(transaction)
 
+    transaction = Transaction("0", hex(publicKey.n), 1)
+    transactions.append(transaction)
     lastblock = getchain()["Blocks"][0]
 
     proof = 0
@@ -47,26 +47,39 @@ def mine():
         testBlock = Block(sha256(json.dumps(lastblock,separators=(',', ':')).encode()).hexdigest(), transactions, proof)
         hash = sha256(testBlock.to_json().encode()).hexdigest()
 
-    postnewproof(proof, name)
+    postnewproof(proof, publicKey)
     print("Block sent with proof: ", proof)
 
 def addTransaction(publicKey, privateKey):
-    fromS = input("from? - ")
     to = input("to? - ")
     amount = input("amount? - ")
 
-    message = (fromS+to+amount).encode('utf8')
+    message = (hex(publicKey.n)+to+amount).encode('utf8')
     hashed = rsa.compute_hash(message, 'SHA-256')
     signature = rsa.sign_hash(hashed, privateKey, 'SHA-256').hex()
-    postnewtransaction(fromS, to, amount, signature.encode(), publicKey)
+    postnewtransaction(to, amount, signature.encode(), publicKey)
     print("Transaction sent!")
 
 def generateKeys():
     #TODO: Save keys to disk
     print("No key pair found. Generating new key pair...")
-    keys = rsa.newkeys(512)
-    print("New key pair generated.")
+    keys = rsa.newkeys(512, exponent=65537)
+    print("New key pair generated. Your public key is")
+    print(hex(keys[0].n))
     return keys
+
+def mineBad(publicKey):
+    print("Submit invalid proof")
+    proof = input("proof? - ")
+    postnewproof(proof, publicKey)
+
+def addTransactionBad():
+    print("Submit invalid transaction")
+    publicKeyN = input("from? - ")
+    to = input("to? - ")
+    amount = input("amount? - ")
+    signature = input("signature? - ")
+    postnewtransaction(to, amount, bytes(int(signature)).hex().encode(), rsa.PublicKey(int(publicKeyN, base=16), 65537))
 
 def main():
     #TODO: Add loading of keys from disk
@@ -82,13 +95,17 @@ def main():
         elif userInput == "c":
             print(getchainPretty())
         elif userInput == "m":
-            mine()
+            mine(publicKey)
         elif userInput == "t":
             print(getpendingtransactionsPretty())
         elif userInput == "a":
             addTransaction(publicKey, privateKey)
         elif userInput == "k":
             (publicKey, privateKey) = generateKeys()
+        elif userInput == "y":
+            mineBad(publicKey)
+        elif userInput == "z":
+            addTransactionBad()
 
 
 main()

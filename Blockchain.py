@@ -1,4 +1,3 @@
-import codecs
 import json
 import rsa
 from rsa import VerificationError
@@ -40,36 +39,32 @@ class Blockchain:
         transactions = {"Pending_transactions": transactionslist}
         return json.dumps(transactions,separators=(',', ':'), indent=2)
 
-    def addtransaction(self, fromS, to, amount, signature, publicKeyN, publicKeyE):
-        if fromS in self.publicKeys:
-            publicKey = self.publicKeys[fromS]
-        else:
-            publicKey = rsa.PublicKey(int(publicKeyN), int(publicKeyE))
-            self.publicKeys[fromS] = publicKey
-        message = (fromS + to + amount).encode('utf8')
+    def addtransaction(self, to, amount, signature, publicKeyN):
+        publicKey = rsa.PublicKey(int(publicKeyN, base=16), 65537)
+        message = (publicKeyN + to + amount).encode('utf8')
         try:
             rsa.verify(message, bytes.fromhex(signature), publicKey)
         except VerificationError:
             print("False signature attempt")
             return False
-        transaction_to_add = Transaction(fromS, to, amount)
+        transaction_to_add = Transaction(publicKeyN, to, amount)
         self.pendingTransactions.append(transaction_to_add)
         return True
 
     def removetransactions(self):
         self.pendingTransactions.clear()
 
-    def verifyblock(self, proof, name):
+    def verifyblock(self, proof, publicKeyN):
+        if len(self.pendingTransactions) == 0:
+            print("Nothing to mine")
+            return "NO TRANSACTIONS TO MINE"
         transactions = []
         for t in self.pendingTransactions:
             transactions.append(t)
-
+        transactions.append(Transaction("0", publicKeyN, 1))
         newBlock = Block(sha256(self.currBlock.to_json().encode()).hexdigest(), transactions, proof)
         hash = sha256(newBlock.to_json().encode()).hexdigest()
         if hash[:4] == "0000":
-            #what account should we reward from?
-            #currently if someone mines without having done a transaction, their coins can be stolen
-            newBlock.transactions.append(Transaction("0", name, 1))
             self.addblock(newBlock)
             self.removetransactions()
             return "VALID"

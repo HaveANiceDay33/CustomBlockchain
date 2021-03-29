@@ -22,7 +22,7 @@ def printBlockChain():
 def verifyBlock():
     if request.method == 'POST':
         data = request.form
-        return bc.verifyblock(int(data.get("proof")), data.get("name"))
+        return bc.verifyblock(int(data.get("proof")), data.get("publicKeyN"))
     else:
         return "Could not verify block"
 
@@ -34,8 +34,8 @@ def printTransaction():
 def addtransaction():
     if request.method == 'POST':
         data = request.form
-        if(bc.addtransaction(data.get("from"), data.get("to"), data.get("amount"), data.get("signature"),
-                          data.get("publicKeyN"), data.get("publicKeyE"))):
+        if(bc.addtransaction(data.get("to"), data.get("amount"), data.get("signature"),
+                          data.get("publicKeyN"))):
             return "ADDED transaction"
         else:
             return "Invalid signature"

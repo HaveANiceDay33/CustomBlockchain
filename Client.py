@@ -1,6 +1,7 @@
 import requests
 import json
 import rsa
+import pickle
 from Transaction import Transaction
 from Block import Block
 from hashlib import sha256
@@ -61,11 +62,12 @@ def addTransaction(publicKey, privateKey):
     print("Transaction sent!")
 
 def generateKeys():
-    #TODO: Save keys to disk
-    print("No key pair found. Generating new key pair...")
+    print("Generating new key pair...")
     keys = rsa.newkeys(512, exponent=65537)
     print("New key pair generated. Your public key is")
     print(hex(keys[0].n))
+    pickle.dump(keys[0], open("publicKey.pickle", "wb"))
+    pickle.dump(keys[1], open("privateKey.pickle", "wb"))
     return keys
 
 def mineBad(publicKey):
@@ -82,11 +84,11 @@ def addTransactionBad():
     postnewtransaction(to, amount, bytes(int(signature)).hex().encode(), rsa.PublicKey(int(publicKeyN, base=16), 65537))
 
 def main():
-    #TODO: Add loading of keys from disk
-    publicKey = None
-    privateKey = None
-    hasKeys = False
-    if(hasKeys == False):
+    try:
+        publicKey = pickle.load(open("publicKey.pickle", "rb"))
+        privateKey = pickle.load(open("privateKey.pickle", "rb"))
+    except (OSError, IOError):
+        print("No key pair found.")
         (publicKey, privateKey) = generateKeys()
     while(1==1):
         userInput = str.lower(input("CLIENT >> "))

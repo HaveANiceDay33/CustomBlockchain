@@ -1,3 +1,4 @@
+import pickle
 from flask import Flask, render_template
 from flask import request
 from flask_cors import CORS, cross_origin
@@ -6,7 +7,11 @@ from Blockchain import Blockchain
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
-bc = Blockchain()
+try:
+    bc = pickle.load(open("blockchain.pickle", "rb"))
+except (OSError, IOError):
+    print("No blockchain found on disk. Creating new blockchain")
+    bc = Blockchain()
 
 
 @app.route('/')
@@ -22,7 +27,9 @@ def printBlockChain():
 def verifyBlock():
     if request.method == 'POST':
         data = request.form
-        return bc.verifyblock(int(data.get("proof")), data.get("publicKeyN"))
+        result = bc.verifyblock(int(data.get("proof")), data.get("publicKeyN"))
+        pickle.dump(bc, open("blockchain.pickle", "wb"))
+        return result
     else:
         return "Could not verify block"
 
@@ -36,6 +43,7 @@ def addtransaction():
         data = request.form
         if(bc.addtransaction(data.get("to"), data.get("amount"), data.get("signature"),
                           data.get("publicKeyN"))):
+            pickle.dump(bc, open("blockchain.pickle", "wb"))
             return "ADDED transaction"
         else:
             return "Invalid signature"

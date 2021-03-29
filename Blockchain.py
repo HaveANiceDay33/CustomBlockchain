@@ -59,7 +59,7 @@ class Blockchain:
     def removetransactions(self):
         self.pendingTransactions.clear()
 
-    def verifyblock(self, proof):
+    def verifyblock(self, proof, name):
         transactions = []
         for t in self.pendingTransactions:
             transactions.append(t)
@@ -67,6 +67,9 @@ class Blockchain:
         newBlock = Block(sha256(self.currBlock.to_json().encode()).hexdigest(), transactions, proof)
         hash = sha256(newBlock.to_json().encode()).hexdigest()
         if hash[:4] == "0000":
+            #what account should we reward from?
+            #currently if someone mines without having done a transaction, their coins can be stolen
+            newBlock.transactions.append(Transaction("0", name, 1))
             self.addblock(newBlock)
             self.removetransactions()
             return "VALID"

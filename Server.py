@@ -22,7 +22,7 @@ def printBlockChain():
 def verifyBlock():
     if request.method == 'POST':
         data = request.form
-        return bc.verifyblock(int(data.get("proof")))
+        return bc.verifyblock(int(data.get("proof")), data.get("name"))
     else:
         return "Could not verify block"
 

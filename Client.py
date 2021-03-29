@@ -27,10 +27,11 @@ def postnewtransaction(fromS, to, amount, signature, publicKey):
                                                              'signature': signature, 'publicKeyN': publicKey.n,
                                                              'publicKeyE': publicKey.e})
 
-def postnewproof(proof):
-    return requests.post(apiUrl + "/mine/prove", data={'proof': proof})
+def postnewproof(proof, name):
+    return requests.post(apiUrl + "/mine/prove", data={'proof': proof, 'name': name})
 
 def mine():
+    name = input("Mine for who? - ")
     transactionsDict = getpendingtransactions()["Pending_transactions"]
     transactions = []
     for t in transactionsDict:
@@ -46,12 +47,12 @@ def mine():
         testBlock = Block(sha256(json.dumps(lastblock,separators=(',', ':')).encode()).hexdigest(), transactions, proof)
         hash = sha256(testBlock.to_json().encode()).hexdigest()
 
-    postnewproof(proof)
+    postnewproof(proof, name)
     print("Block sent with proof: ", proof)
 
 def addTransaction(publicKey, privateKey):
     fromS = input("from? - ")
-    to =input("to? - ")
+    to = input("to? - ")
     amount = input("amount? - ")
 
     message = (fromS+to+amount).encode('utf8')

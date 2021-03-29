@@ -2,9 +2,13 @@
 <html>
 
 <head>
-    <title>SamBKCoin (lol)</title>
+    <script src="https://kit.fontawesome.com/f34bdf89e7.js" crossorigin="anonymous"></script>
+    <title>SamBKCoin</title>
 </head>
 <style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
     .row {
         display: flex;
     }
@@ -13,15 +17,27 @@
     }
     #blocklist{
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-columns: 1fr;
         grid-gap: 5px;
         grid-template-rows: min-content;
+        margin:10px;
     }
     .block {
         border: 2px solid black;
         border-radius: 4px;
-        margin: 5px;
-        
+        margin: 0px 10px;
+        padding: 3px;
+    }
+    .chainlink {
+        text-align: center;
+    }
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 5px;
+        text-align: left;
     }
 </style>
 

@@ -18,6 +18,15 @@ async function getCurrentChain(url){
 
     for(let i = 0; i < blocks.length; i++){
         const newBlock = createBlock(blocks[i]);
+        const transactionsList = blocks[i].transactions;
+        const table = createTransactionTable();
+        for(let j = 0; j < transactionsList.length; j++){
+            const newTrans = createTransaction(transactionsList[j]);
+            table.append(newTrans);
+        }
+        newBlock.append(table);
+        const newChainLink = createLink();
+        newList.appendChild(newChainLink);
         newList.appendChild(newBlock);
     }
 
@@ -30,17 +39,35 @@ async function getCurrentChain(url){
 }
 
 createBlock = (block) => {
-    return htmlToElement(`<div class = 'block'>
+    return htmlToElement(`
+    <div class = 'block'>
     <h2 class = 'proof'>Proof: ${block.proof}</h2>
-    
+    <h4 class = 'prevHash'>Previous Hash: ${block.prevHash}</h2>
+
     </div>`);
 }
 
-createPendingTransaction = (transaction) => {
-    return htmlToElement(`<div class = 'pendingTransaction'>
-    <h2 class = 'transaction'>${transaction.from}   ${transaction.amount}-> ${transaction.to}</h2>
-    
-    </div>`)
+createTransactionTable = () => {
+    return htmlToElement(`<table>
+        <tr>
+        <th>From</th>
+        <th>To</th>
+        <th>Amount</th>
+        <tr>
+    </table>`)
+}
+
+createTransaction = (t) => {
+    return htmlToElement(`
+        <tr>
+        <td>${t.from}</th>
+        <td>${t.to}</th>
+        <td>${t.amount}</th>
+        <tr>`)
+}
+
+createLink = () => {
+    return htmlToElement(`<div class = 'chainlink'><i class='fas fa-link'></i></div>`)
 }
 
 async function getPendingTransactions(url){
@@ -50,12 +77,12 @@ async function getPendingTransactions(url){
 
     const container = document.querySelector("#transactionDiv");
 	const newList = htmlToElement('<div id="transactionsList"></div>');
-
-    for(let i = 0; i < pending.length; i++){
-        const newPend = createPendingTransaction(pending[i]);
-        newList.appendChild(newPend);
+    const table = createTransactionTable();
+    for(let j = 0; j < pending.length; j++){
+        const newTrans = createTransaction(pending[j]);
+        table.append(newTrans);
     }
-
+    newList.append(table);
     const oldList = document.querySelector("#transactionsList");
 	container.appendChild(oldList);
 	oldList.removeAttribute("id");

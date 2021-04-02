@@ -14,7 +14,7 @@ class Blockchain:
         self.firstBlock = self.currBlock
         self.pendingTransactions = []
         self.blocks = {}
-        self.publicKeys = {}
+        self.balances = {}
 
     def addblock(self, block):
         self.blocks[block.prev_hash] = self.currBlock
@@ -40,6 +40,10 @@ class Blockchain:
         return json.dumps(transactions,separators=(',', ':'), indent=2)
 
     def addtransaction(self, to, amount, signature, publicKeyN):
+        if publicKeyN not in self.balances:
+            self.balances[publicKeyN] = 0
+        if to not in self.balances:
+            self.balances[to] = 0
         publicKey = rsa.PublicKey(int(publicKeyN, base=16), 65537)
         message = (publicKeyN + to + amount).encode('utf8')
         try:
@@ -55,6 +59,8 @@ class Blockchain:
         self.pendingTransactions.clear()
 
     def verifyblock(self, proof, publicKeyN):
+        if publicKeyN not in self.balances:
+            self.balances[publicKeyN] = 0
         if len(self.pendingTransactions) == 0:
             print("Nothing to mine")
             return "NO TRANSACTIONS TO MINE"

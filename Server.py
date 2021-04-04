@@ -9,6 +9,7 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 try:
     bc = pickle.load(open("blockchain.pickle", "rb"))
+    userPK = pickle.load(open("publicKey.pickle", "rb"))
 except (OSError, IOError):
     print("No blockchain found on disk. Creating new blockchain")
     bc = Blockchain()
@@ -52,7 +53,11 @@ def addtransaction():
 
 @app.route('/balances', methods = ["GET"])
 def getBalances():
-    return bc.calculateBalances()
+    return bc.jsonBalances()
+
+@app.route('/balances/personal', methods = ["GET"])
+def getBalance():
+    return bc.getBalance(userPK.n)
 
 if __name__ == '__main__':
     app.run()

@@ -139,10 +139,19 @@ async function getPendingTransactions(url){
 	oldList.parentElement.appendChild(newList);
 }
 
+async function getPersonalBalance(url){
+    response = await fetch(url + "/transactions/");
+    var data = await response.json();
+    var balance = data.Balance;
+
+    document.querySelector("#balance").innerHTML = "Your Balance - " + balance;
+}
+
 initPage = () => {
     getCurrentChain(apiUrl);
     getPendingTransactions(apiUrl);
     getBalances(apiUrl);
+    getPersonalBalance(apiUrl);
 }
 
 initPage();

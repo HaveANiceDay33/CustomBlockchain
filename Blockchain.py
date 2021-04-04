@@ -44,6 +44,10 @@ class Blockchain:
             self.balances[publicKeyN] = 0
         if to not in self.balances:
             self.balances[to] = 0
+        if self.balances[publicKeyN] < int(amount):
+            print("Inadequate payment attempt")
+            return False
+        self.balances[publicKeyN] -= int(amount)
         publicKey = rsa.PublicKey(int(publicKeyN, base=16), 65537)
         message = (publicKeyN + to + amount).encode('utf8')
         try:
@@ -73,7 +77,37 @@ class Blockchain:
         if hash[:4] == "0000":
             self.addblock(newBlock)
             self.removetransactions()
+            self.calculateBalances()
+            print(self.jsonBalances())
+            print(self.getBalance(publicKeyN))
             return "VALID"
         else:
             print("INVALID BLOCK")
             return "INVALID"
+
+    def calculateBalances(self):
+        readBlock = self.currBlock
+        for key in self.balances.keys():
+            self.balances[key] = 0
+        while readBlock != self.firstBlock:
+            for t in readBlock.transactions:
+                if t.source != '0':
+                    self.balances[t.source] -= int(t.amount)
+                self.balances[t.destination] += int(t.amount)
+            readBlock = self.blocks[readBlock.prev_hash]
+
+    def jsonBalances(self):
+        balancesDict = {}
+        balanceNameList = []
+        for key in self.balances.keys():
+            accountDict = {}
+            accountDict['user'] = key
+            accountDict['balance'] = self.balances[key]
+            balanceNameList.append(accountDict)
+        balancesDict["Balances"] = balanceNameList
+        return json.dumps(balancesDict,separators=(',', ':'), indent=2)
+
+    def getBalance(self, publicKeyN):
+        balanceDict = {}
+        balanceDict["Balance"] = self.balances[publicKeyN]
+        return json.dumps(balanceDict,separators=(',', ':'), indent=2)

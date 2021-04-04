@@ -140,7 +140,7 @@ async function getPendingTransactions(url){
 }
 
 async function getPersonalBalance(url){
-    response = await fetch(url + "/transactions/personal");
+    response = await fetch(url + "/balances/personal");
     var data = await response.json();
     var balance = data.Balance;
 

@@ -78,8 +78,6 @@ class Blockchain:
             self.addblock(newBlock)
             self.removetransactions()
             self.calculateBalances()
-            print(self.jsonBalances())
-            print(self.getBalance(publicKeyN))
             return "VALID"
         else:
             print("INVALID BLOCK")

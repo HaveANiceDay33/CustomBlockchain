@@ -49,19 +49,32 @@
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+    #banner {
+        padding: 5px;
+        background-color: #B3CFCB;
+    }
 </style>
 
 <body>
+    <div id = "banner">
+        <h1>SamBKCoin</h1>
+    </div>
     <div class="row">
         <div id="chainDiv" class="column">
-            <h1>Current Chain:</h1>
+            <h2>Current Chain:</h2>
             <div id="blocklist">
 
             </div>
         </div>
         <div id="transactionDiv" class="column">
-            <h1>Pending Transactions:</h1>
+            <h2>Pending Transactions:</h2>
             <div id="transactionsList">
+
+            </div>
+        </div>
+        <div id="balancesDiv" class="column">
+            <h2>Balances:</h2>
+            <div id="balancesList">
 
             </div>
         </div>

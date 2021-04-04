@@ -80,6 +80,44 @@ createLink = () => {
     return htmlToElement(`<div class = 'chainlink'><i class='fas fa-link'></i></div>`)
 }
 
+createBalanceTable = () => {
+    return htmlToElement(`<table>
+        <tr>
+        <th>User</th>
+        <th>Balance</th>
+        <tr>
+    </table>`)
+}
+
+createBalance = (b) => {
+    return htmlToElement(`
+        <tr>
+        <td>${b.user}</th>
+        <td>${b.balance}</th>
+        <tr>`)
+}
+
+async function getBalances(url){
+    response = await fetch(url + "/balances");
+    var data = await response.json();
+    var bals = data.Balances;
+
+    const container = document.querySelector("#balancesDiv");
+	const newList = htmlToElement('<div id="balancesList"></div>');
+    const table = createBalanceTable();
+    for(let j = 0; j < bals.length; j++){
+        const newBal = createBalance(bals[j]);
+        table.append(newBal);
+    }
+    newList.append(table);
+    const oldList = document.querySelector("#balancesList");
+	container.appendChild(oldList);
+	oldList.removeAttribute("id");
+	oldList.hidden = true;
+
+	oldList.parentElement.appendChild(newList);
+}
+
 async function getPendingTransactions(url){
     response = await fetch(url + "/transactions");
     var data = await response.json();
@@ -104,6 +142,7 @@ async function getPendingTransactions(url){
 initPage = () => {
     getCurrentChain(apiUrl);
     getPendingTransactions(apiUrl);
+    getBalances(apiUrl);
 }
 
 initPage();

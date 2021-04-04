@@ -50,6 +50,10 @@ def addtransaction():
     else:
         return "Cannot add transaction"
 
+@app.route('/balances', methods = ["GET"])
+def getBalances():
+    return bc.calculateBalances()
+
 if __name__ == '__main__':
     app.run()
 

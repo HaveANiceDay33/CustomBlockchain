@@ -108,6 +108,8 @@ def main():
             mineBad(publicKey)
         elif userInput == "z":
             addTransactionBad()
+        else:
+            print("Invalid Command")
 
 
 main()

@@ -83,6 +83,10 @@ def addTransactionBad():
     signature = input("signature? - ")
     postnewtransaction(to, amount, bytes(int(signature)).hex().encode(), rsa.PublicKey(int(publicKeyN, base=16), 65537))
 
+def getBalance():
+    userPK = pickle.load(open("publicKey.pickle", "rb"));
+    return requests.get(apiUrl + "/balances/personal/"+str(hex(userPK.n))).json()
+
 def main():
     try:
         publicKey = pickle.load(open("publicKey.pickle", "rb"))
@@ -108,6 +112,8 @@ def main():
             mineBad(publicKey)
         elif userInput == "z":
             addTransactionBad()
+        elif userInput == "b":
+            print("Current Balance: " + str(getBalance()["Balance"]))
         else:
             print("Invalid Command")
 

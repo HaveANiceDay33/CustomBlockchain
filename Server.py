@@ -7,9 +7,9 @@ from Blockchain import Blockchain
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
+
 try:
     bc = pickle.load(open("blockchain.pickle", "rb"))
-    userPK = pickle.load(open("publicKey.pickle", "rb"))
 except (OSError, IOError):
     print("No blockchain found on disk. Creating new blockchain")
     bc = Blockchain()
@@ -55,9 +55,9 @@ def addtransaction():
 def getBalances():
     return bc.jsonBalances()
 
-@app.route('/balances/personal', methods = ["GET"])
-def getBalance():
-    return bc.getBalance(userPK.n)
+@app.route('/balances/personal/<u>', methods = ["GET"])
+def getBalance(u):
+    return bc.getBalance(str(u))
 
 if __name__ == '__main__':
     app.run()

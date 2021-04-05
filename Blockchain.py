@@ -15,6 +15,7 @@ class Blockchain:
         self.pendingTransactions = []
         self.blocks = {}
         self.balances = {}
+        self.calculateBalances()
 
     def addblock(self, block):
         self.blocks[block.prev_hash] = self.currBlock
@@ -93,8 +94,6 @@ class Blockchain:
                     self.balances[t.source] -= int(t.amount)
                 self.balances[t.destination] += int(t.amount)
             readBlock = self.blocks[readBlock.prev_hash]
-
-    def jsonBalances(self):
         balancesDict = {}
         balanceNameList = []
         for key in self.balances.keys():
@@ -103,7 +102,10 @@ class Blockchain:
             accountDict['balance'] = self.balances[key]
             balanceNameList.append(accountDict)
         balancesDict["Balances"] = balanceNameList
-        return json.dumps(balancesDict,separators=(',', ':'), indent=2)
+        self.jsonBalString = json.dumps(balancesDict,separators=(',', ':'), indent=2)
+
+    def jsonBalances(self):
+        return self.jsonBalString
 
     def getBalance(self, publicKeyN):
         balanceDict = {}

@@ -47,7 +47,7 @@ def addtransaction():
             pickle.dump(bc, open("blockchain.pickle", "wb"))
             return "ADDED transaction"
         else:
-            return "Invalid signature"
+            return "Something went wrong."
     else:
         return "Cannot add transaction"
 

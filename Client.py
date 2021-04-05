@@ -48,8 +48,9 @@ def mine(publicKey):
         testBlock = Block(sha256(json.dumps(lastblock,separators=(',', ':')).encode()).hexdigest(), transactions, proof)
         hash = sha256(testBlock.to_json().encode()).hexdigest()
 
-    postnewproof(proof, publicKey)
+    success = postnewproof(proof, publicKey)
     print("Block sent with proof: ", proof)
+    print(success.content.decode())
 
 def addTransaction(publicKey, privateKey):
     to = input("to? - ")
@@ -58,8 +59,8 @@ def addTransaction(publicKey, privateKey):
     message = (hex(publicKey.n)+to+amount).encode('utf8')
     hashed = rsa.compute_hash(message, 'SHA-256')
     signature = rsa.sign_hash(hashed, privateKey, 'SHA-256').hex()
-    postnewtransaction(to, amount, signature.encode(), publicKey)
-    print("Transaction sent!")
+    success = postnewtransaction(to, amount, signature.encode(), publicKey)
+    print(success.content.decode())
 
 def generateKeys():
     print("Generating new key pair...")

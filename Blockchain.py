@@ -79,10 +79,11 @@ class Blockchain:
             self.addblock(newBlock)
             self.removetransactions()
             self.calculateBalances()
-            return "VALID"
+            return "BLOCK MINED SUCCESSFULLY"
         else:
             print("INVALID BLOCK")
-            return "INVALID"
+            return "INVALID BLOCK - MINE FAILED"
+
 
     def calculateBalances(self):
         readBlock = self.currBlock
